@@ -1,6 +1,7 @@
-
-import ethereum as eth
+from ethereum import Ethereum
 from period import Period
+
+POOL_FEE = 0.01  # placeholder
 
 class CostCalculator:
     day: Period
@@ -8,23 +9,24 @@ class CostCalculator:
     month: Period
     year: Period
 
-    def __init__(self, gpu_mhs: float, power: int, kwh_price: float):
+    def __init__(self, gpu_mhs: float, power: int, kwh_price_gbp: float):
+        eth = Ethereum.get_instance()
         gpu_ghs = gpu_mhs / 1000
-        mine_chance = gpu_ghs / eth.ETH_NET_HASH_GHS  # probability to mine next block
-        seconds_in_month = 2628288.0  # number of seconds in an average month
-        blocks_per_month = seconds_in_month / eth.ETH_BLOCK_TIME  # total blocks mined each month
-        blocked_mined_per_month = mine_chance * blocks_per_month
-        monthly_revenue_eth = eth.ETH_BLOCK_REWARD_GBP * blocked_mined_per_month
+        mine_chance = gpu_ghs / eth.net_hash_ghs  # probability to mine next block
 
         kwh_day = power * 24 / 1000
-        power_cost_day = kwh_day * kwh_price
+        power_cost_day = kwh_day * kwh_price_gbp
+        blocks_mined_per_month = mine_chance * eth.blocks_per_month
 
-        self.month = Period(monthly_revenue_eth, (power_cost_day * 30), eth.POOL_FEE, 30)
-        self.day = Period((monthly_revenue_eth / 30), power_cost_day, eth.POOL_FEE, 1)
-        self.week = Period((self.day.income * 7), (power_cost_day * 7), eth.POOL_FEE, 7)
-        self.year = Period((self.day.income * 365), (power_cost_day * 365), eth.POOL_FEE, 365)
+        self.month = Period(blocks_mined_per_month, (power_cost_day * 30), POOL_FEE, 30)
+        self.day = Period((blocks_mined_per_month / 30), power_cost_day, POOL_FEE, 1)
+        self.week = Period((self.day.blocks_mined * 7), (power_cost_day * 7), POOL_FEE, 7)
+        self.year = Period((self.day.blocks_mined * 365), (power_cost_day * 365), POOL_FEE, 365)
 
 
 if __name__ == '__main__':
-    calc = CostCalculator(gpu_mhs=100.00, power=125, kwh_price=0.1437)
-    print(calc.month)
+    calc = CostCalculator(gpu_mhs=100.00, power=125, kwh_price_gbp=0.1437)
+    print(f'Monthly revenue = {calc.month.revenue} GBP')
+    print(f'Monthly profit = {calc.month.profit} GBP')
+    print(f'Monthly pool fee = {calc.month.pool_fee} GBP')
+    print(f'Monthly power cost = {calc.month.power_cost} GBP')
