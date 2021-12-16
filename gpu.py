@@ -5,18 +5,25 @@ POOL_FEE = 0.01  # placeholder
 
 
 class GPU:
-    name: str
+    efficiency: float  # mhs/w
+    epp: float  # Efficiency Per Pound ((price / efficiency)*1000)
     mhs: float
-    power: int
+    name: str
+    power: int  # in Watts
+    price: float
+    roi: float  # return on investment in days
     day: Period
     week: Period
     month: Period
     year: Period
 
-    def __init__(self, name: str, mhs: float, power: int, kwh_price_gbp: float):
+    def __init__(self, mhs: float, name: str, power: int, price: float, kwh_price_gbp: float):
         self.name = name
         self.mhs = mhs
         self.power = power
+        self.price = price
+        self.efficiency = self.mhs / self.power
+        self.epp = (self.efficiency / self.price) * 1000
         eth = Ethereum.get_instance()
         gpu_ghs = mhs / 1000
         mine_chance = gpu_ghs / eth.net_hash_ghs  # probability to mine next block
@@ -30,10 +37,19 @@ class GPU:
         self.week = Period((self.day.blocks_mined * 7), (power_cost_day * 7), POOL_FEE, 7)
         self.year = Period((self.day.blocks_mined * 365), (power_cost_day * 365), POOL_FEE, 365)
 
+        self.roi = self.price / self.day.profit
+
 
 if __name__ == '__main__':
-    calc = GPU(mhs=100.00, power=125, kwh_price_gbp=0.1437)
-    print(f'Monthly revenue = {calc.month.revenue} GBP')
-    print(f'Monthly profit = {calc.month.profit} GBP')
-    print(f'Monthly pool fee = {calc.month.pool_fee} GBP')
-    print(f'Monthly power cost = {calc.month.power_cost} GBP')
+    gpu = GPU(mhs=63.20, name="AMD RX 6800 XT", power=104, price=1000.0, kwh_price_gbp=0.1437)
+    print(f'Name = {gpu.name}')
+    print(f'Power = {gpu.power} W')
+    print(f'Mh/s = {gpu.mhs:.2f}')
+    print(f'Price = {gpu.price:.2f} GBP')
+    print(f'Efficiency = {gpu.efficiency:.2f} Mh/W')
+    print(f'EPP = {gpu.epp:.4f}')
+    print(f'ROI = {gpu.roi:.1f} days')
+    print(f'Monthly revenue = {gpu.month.revenue:.2f} GBP')
+    print(f'Monthly profit = {gpu.month.profit:.2f} GBP')
+    print(f'Monthly pool fee = {gpu.month.pool_fee:.2f} GBP')
+    print(f'Monthly power cost = {gpu.month.power_cost:.2f} GBP')
