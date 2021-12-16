@@ -4,7 +4,7 @@ from gpu import GPU
 
 gpus = list()
 kwh_price = 0.1437
-with open('gpu_data.csv', newline='') as in_file:
+with open('gpu_input.csv', newline='') as in_file:
     reader = csv.reader(in_file, delimiter=',')
     for row in reader:
         if "model" not in row[0]:

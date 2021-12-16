@@ -1,6 +1,6 @@
-import io
 import requests
 from requests.exceptions import HTTPError
+
 
 class Ethereum:
     __instance = None
