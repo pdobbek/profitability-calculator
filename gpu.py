@@ -39,17 +39,20 @@ class GPU:
 
         self.roi = self.price / self.day.profit
 
+    def print_info(self) -> None:
+        print(f'Name = {self.name}')
+        print(f'Power = {self.power} W')
+        print(f'Mh/s = {self.mhs:.2f}')
+        print(f'Price = {self.price:.2f} GBP')
+        print(f'Efficiency = {self.efficiency:.2f} Mh/W')
+        print(f'EPP = {self.epp:.4f}')
+        print(f'ROI = {self.roi:.1f} days')
+        print(f'Monthly revenue = {self.month.revenue:.2f} GBP')
+        print(f'Monthly profit = {self.month.profit:.2f} GBP')
+        print(f'Monthly pool fee = {self.month.pool_fee:.2f} GBP')
+        print(f'Monthly power cost = {self.month.power_cost:.2f} GBP')
+
 
 if __name__ == '__main__':
     gpu = GPU(mhs=63.20, name="AMD RX 6800 XT", power=104, price=1000.0, kwh_price_gbp=0.1437)
-    print(f'Name = {gpu.name}')
-    print(f'Power = {gpu.power} W')
-    print(f'Mh/s = {gpu.mhs:.2f}')
-    print(f'Price = {gpu.price:.2f} GBP')
-    print(f'Efficiency = {gpu.efficiency:.2f} Mh/W')
-    print(f'EPP = {gpu.epp:.4f}')
-    print(f'ROI = {gpu.roi:.1f} days')
-    print(f'Monthly revenue = {gpu.month.revenue:.2f} GBP')
-    print(f'Monthly profit = {gpu.month.profit:.2f} GBP')
-    print(f'Monthly pool fee = {gpu.month.pool_fee:.2f} GBP')
-    print(f'Monthly power cost = {gpu.month.power_cost:.2f} GBP')
+    gpu.print_info()
