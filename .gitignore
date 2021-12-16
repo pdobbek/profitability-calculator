@@ -76,6 +76,6 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-# script that makes an API key. Contains the API key.
-/api_binary_maker.py
+# script that makes an API key binary  file. Contains the API key.
+/api_bin_maker.py
 /api.bin
