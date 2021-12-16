@@ -3,15 +3,22 @@ from period import Period
 
 POOL_FEE = 0.01  # placeholder
 
-class CostCalculator:
+
+class GPU:
+    name: str
+    mhs: float
+    power: int
     day: Period
     week: Period
     month: Period
     year: Period
 
-    def __init__(self, gpu_mhs: float, power: int, kwh_price_gbp: float):
+    def __init__(self, name: str, mhs: float, power: int, kwh_price_gbp: float):
+        self.name = name
+        self.mhs = mhs
+        self.power = power
         eth = Ethereum.get_instance()
-        gpu_ghs = gpu_mhs / 1000
+        gpu_ghs = mhs / 1000
         mine_chance = gpu_ghs / eth.net_hash_ghs  # probability to mine next block
 
         kwh_day = power * 24 / 1000
@@ -25,7 +32,7 @@ class CostCalculator:
 
 
 if __name__ == '__main__':
-    calc = CostCalculator(gpu_mhs=100.00, power=125, kwh_price_gbp=0.1437)
+    calc = GPU(mhs=100.00, power=125, kwh_price_gbp=0.1437)
     print(f'Monthly revenue = {calc.month.revenue} GBP')
     print(f'Monthly profit = {calc.month.profit} GBP')
     print(f'Monthly pool fee = {calc.month.pool_fee} GBP')
